@@ -8,6 +8,5 @@ public class SfgPetClinic2Application {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SfgPetClinic2Application.class, args);
-		System.out.println("Iniciar");
 	}
 }
