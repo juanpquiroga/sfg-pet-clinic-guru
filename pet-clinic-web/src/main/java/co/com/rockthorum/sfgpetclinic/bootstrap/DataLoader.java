@@ -1,8 +1,6 @@
 package co.com.rockthorum.sfgpetclinic.bootstrap;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -13,11 +11,13 @@ import co.com.rockthorum.sfgpetclinic.model.Pet;
 import co.com.rockthorum.sfgpetclinic.model.PetType;
 import co.com.rockthorum.sfgpetclinic.model.Specialty;
 import co.com.rockthorum.sfgpetclinic.model.Vet;
+import co.com.rockthorum.sfgpetclinic.model.Visit;
 import co.com.rockthorum.sfgpetclinic.services.OwnerService;
 import co.com.rockthorum.sfgpetclinic.services.PetService;
 import co.com.rockthorum.sfgpetclinic.services.PetTypeService;
 import co.com.rockthorum.sfgpetclinic.services.SpecialtyService;
 import co.com.rockthorum.sfgpetclinic.services.VetService;
+import co.com.rockthorum.sfgpetclinic.services.VisitService;
 
 @Component
 public class DataLoader implements CommandLineRunner {
@@ -27,14 +27,17 @@ public class DataLoader implements CommandLineRunner {
 	private final PetService petService;
 	private final PetTypeService petTypeService;
 	private final SpecialtyService specialtyService;
+	private final VisitService visitService;
 
 	@Autowired
-	public DataLoader(OwnerService ownerService, VetService vetService, PetService petService, PetTypeService petTypeService, SpecialtyService specialtyService) {
+	public DataLoader(OwnerService ownerService, VetService vetService, PetService petService, PetTypeService petTypeService, 
+			SpecialtyService specialtyService, VisitService visitService) {
 		this.ownerService = ownerService;
 		this.vetService = vetService;
 		this.petService = petService;
 		this.petTypeService = petTypeService;
 		this.specialtyService = specialtyService;
+		this.visitService = visitService;
 	}
 
 	@Override
@@ -51,7 +54,29 @@ public class DataLoader implements CommandLineRunner {
 		initPetTypes();
 		initOwners();
 		initVets();
-		//initPets();
+		initVisits();
+	}
+
+	private void initVisits() {
+		Visit visit1 = new Visit();
+		visit1.setDate(LocalDate.now());
+		visit1.setDesription("Se encuentra vomitando");
+		
+		Pet pet=petService.findById(1L);
+		visit1.setPet(petService.findById(1L));
+		visitService.save(visit1);
+		
+		Visit visit2 = new Visit();
+		visit2.setDate(LocalDate.now());
+		visit2.setDesription("Lleva tres dias decaido");
+		visit2.setPet(petService.findById(2L));
+		visitService.save(visit2);
+		
+		Visit visit3 = new Visit();
+		visit3.setDate(LocalDate.now());
+		visit3.setDesription("Se lastimo una pata");
+		visit3.setPet(petService.findById(3L));
+		visitService.save(visit3);
 	}
 
 	private void initSpecialties() {
@@ -115,6 +140,8 @@ public class DataLoader implements CommandLineRunner {
 		pet1.setName("Pirañin");
 		pet1.setPetType(petType1);
 		pet1.setBirthDate(LocalDate.of(2010, 1, 10));
+	
+		pet1.setOwner(owner1);
 		owner1.getPets().add(pet1);
 
 		Pet pet2 = new Pet();
@@ -122,7 +149,8 @@ public class DataLoader implements CommandLineRunner {
 		PetType petType2 = petTypeService.findById(2L);
 		pet2.setPetType(petType2);
 		pet2.setBirthDate(LocalDate.of(2013, 3, 10));
-		
+
+		pet2.setOwner(owner1);
 		owner1.getPets().add(pet2);
 		ownerService.save(owner1);
 		
@@ -136,9 +164,10 @@ public class DataLoader implements CommandLineRunner {
 		Pet pet3 = new Pet();
 		pet3.setName("Hogan");
 		PetType petType3 = petTypeService.findById(3L);
-		pet1.setPetType(petType3);
-		pet1.setBirthDate(LocalDate.of(2017, 5, 20));
+		pet3.setPetType(petType3);
+		pet3.setBirthDate(LocalDate.of(2017, 5, 20));
 		
+		pet3.setOwner(owner2);
 		owner2.getPets().add(pet3);
 		ownerService.save(owner2);
 
@@ -153,14 +182,15 @@ public class DataLoader implements CommandLineRunner {
 		pet4.setName("Red");
 		pet4.setPetType(petType1);
 		pet4.setBirthDate(LocalDate.of(2014, 9, 1));
-		owner3.getPets().add(pet4);
 		
+		pet4.setOwner(owner3);
+		owner3.getPets().add(pet4);
 		ownerService.save(owner3);
 		
 		System.out.println("Loaded Owners....");
 	}
 	
-	private void initPets() {
+	/*private void initPets() {
 		Pet pet1 = new Pet();
 		
 		PetType petType1 = new PetType();
@@ -174,6 +204,6 @@ public class DataLoader implements CommandLineRunner {
 		petService.save(pet1);
 		
 		System.out.println("Loaded Pets....");
-	}
+	}*/
 
 }
